@@ -133,4 +133,27 @@ def add_transaction():
 	response = {'message': f'This transaction will be added to Block {index}'}
 	return jsonify(response), 201
 
+@app.route('/connect_node', methods = ['POST'])
+def connect_node():
+	json = request.get_json()
+	nodes = json.get('nodes')
+	if nodes is None:
+		return "No node", 400
+	for node in nodes:
+		blockchain.add_node(node)
+	response = {'message': 'All the nodes are now connected. The Softcoin Blockchain now contains the following nodes:',
+				'total_nodes': list(blockchain.nodes)}
+	return jsonify(response), 201
+
+@app.route('/replace_chain', methods = ['GET'])
+def replace_chain():
+    is_chain_replaced = blockchain.replace_chain()
+    if is_chain_replaced:
+        response = {'message': 'The nodes had different chains so the chain with largest block is selected:',
+        			'new_chain': blockchain_chain}
+    else:
+        response = {'message': 'All good. The chain is the largest one.',
+        			'actual_chain': blockchain.chain}
+    return jsonify(response), 200
+
 app.run(host = '0.0.0.0', port = 5000)
