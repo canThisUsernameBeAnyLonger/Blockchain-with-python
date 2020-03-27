@@ -4,7 +4,7 @@ import json
 from flask import Flask, jsonify, request
 import requests
 from uuid import uuid4
-from urlib.parse import urlparse
+from urllib.parse import urlparse
 
 class Blockchain:
     
@@ -47,7 +47,7 @@ class Blockchain:
     	block_index = 1
     	while block_index < len(chain):
     		block = chain[block_index]
-    		if block['previous_hash'] != self.hash(previious_block):
+    		if block['previous_hash'] != self.hash(previous_block):
     			return False
     		previous_proof = previous_block['proof']
     		proof = block['proof']
@@ -74,7 +74,7 @@ class Blockchain:
     	longest_chain = None
     	max_length = len(self.chain)
     	for nodes in network:
-    		response = requests,=.get(f'http://{node}/get_chain')
+    		response = requests.get(f'http://{node}/get_chain')
     		if response.status_code == 200:
     			length = response.json()['length']
     			chain = response.json()['chain']
@@ -150,7 +150,7 @@ def replace_chain():
     is_chain_replaced = blockchain.replace_chain()
     if is_chain_replaced:
         response = {'message': 'The nodes had different chains so the chain with largest block is selected:',
-        			'new_chain': blockchain_chain}
+        			'new_chain': blockchain.chain}
     else:
         response = {'message': 'All good. The chain is the largest one.',
         			'actual_chain': blockchain.chain}
