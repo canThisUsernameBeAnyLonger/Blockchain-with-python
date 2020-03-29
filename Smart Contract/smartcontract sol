@@ -1,0 +1,38 @@
+pragma solidity ^0.6.1;
+
+contract softcoin_ico {
+    uint public max_softcoins = 1000000;
+    uint public usd_to_softcoins = 1000;
+    uint public total_softcoins_bought = 0;
+    
+    mapping(address => uint) equity_softcoins;
+    mapping(address => uint) equity_usd;
+    
+    modifier can_buy_softcoins (uint usd_invested) {
+        require (usd_invested = usd_to_softcoins + total_softcoins_bought <= max_softcoins);
+        _;
+    }
+    
+    function equity_in_softcoins(address investor) external returns (uint) {
+        return equity_softcoins[investor];
+    }
+    
+    function equity_in_usd(address investor) external returns (uint) {
+        return equity_usd[investor];
+    }
+    
+    function buy_softcoin(address investor, uint usd_invested) external
+    can_buy_softcoins(usd_invested){
+        uint softcoins_bought = usd_invested*usd_to_softcoins;
+        equity_softcoins[investor] += softcoins_bought;
+        equity_usd[investor] = equity_softcoins[investor]/1000;
+        total_softcoins_bought += softcoins_bought;
+    }
+    
+    function sell_softcoin(address investor, uint sold_softcoins) external {
+        uint softcoins_sold;
+        equity_softcoins[investor] -= softcoins_sold;
+        equity_usd[investor] = equity_softcoins[investor]/1000;
+        total_softcoins_bought -= softcoins_sold;
+    }
+}
